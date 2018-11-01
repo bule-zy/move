@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+<style>
+	#box{
+		width:150px;
+		height:100px;
+		background-color:red;
+	}
+</style>
+</head>
+<body>
+<div id="box"></div>
+<script src="tween.js"></script>
+<script>
+	var box = document.getElementById("box");
+	function move(parma){
+		var el = parma.el;
+		var target = parma.target;
+		var d = parma.d;
+		var ease = parma.ease || "linear";
+		var callback = parma.callback;
+		var o = {};
+		for (var attr in target) {
+			var temp = parseFloat(getComputedStyle(el)[attr]);
+			o[attr] = {
+				b: temp,
+				c: target[attr] - temp
+			}
+		}
+		var past = new Date();
+		var timer = setInterval(function(){
+			var currTime = new Date();
+			var t = currTime - past;
+			if(t >= d){
+				t = d;
+				clearInterval(timer);
+			}
+			for (var attr in o) {
+				var v = Tween[ease](t,o[attr].b,o[attr].c,d);
+				el.style[attr] = (attr === "opacity") ? v : (v + "px");
+			}
+			if(t == d){
+				(typeof callback === "function") && callback();
+			}
+		},16);
+	}
+	move({
+		el: box,
+		d: 1000,
+		target: {
+			"width": 300,
+			"opacity": 0
+		},
+		callback:function(){
+			console.log("ddddd");
+		}
+	})
+</script>
+</body>
+</html>
